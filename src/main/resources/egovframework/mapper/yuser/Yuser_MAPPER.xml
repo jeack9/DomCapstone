@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.yuser.service.impl.YuserMapper">
+	
+
+	<resultMap id="yuser" type="egovframework.yuser.service.YuserVO">
+		<result property="userno" column="userno" />
+		<result property="userid" column="userid" />
+		<result property="userpw" column="userpw" />
+		<result property="username" column="username" />
+		<result property="userphone" column="userphone" />
+		<result property="useraddr" column="useraddr" />
+		<result property="appendix" column="appendix" />
+		<result property="admin" column="admin" />
+		<result property="usergrade" column="usergrade" />
+		<result property="userpoint" column="userpoint" />
+		<result property="departno" column="departno" />
+		<result property="roomno" column="roomno" />
+	</resultMap>
+	
+	<resultMap id="ypoint" type="egovframework.ypoint.service.YpointVO">
+		<result property="pointno" column="pointno" />
+		<result property="userid" column="userid" />
+		<result property="manager" column="manager" />
+		<result property="pointreason" column="pointreason" />
+		<result property="pointchange" column="pointchange" />
+		<result property="pointdate" column="pointdate" />
+	</resultMap>
+	
+	<insert id="insertYuser">
+		<![CDATA[
+			INSERT INTO yuser 
+				( userid
+				  , userpw
+				  , username
+				  , userphone
+				  , useraddr
+				  , appendix
+				  , usergrade
+				  , departno )
+			VALUES ( #{userid}
+				  , #{userpw}
+				  , #{username}
+				  , #{userphone}
+				  , #{useraddr}
+				  , #{appendix}
+				  , #{usergrade}
+				  , #{departno} )
+		]]>
+	</insert>
+	
+ 	<update id="updateUserpoint">
+		<![CDATA[
+			UPDATE yuser
+			SET userpoint= (SELECT SUM(pointchange) FROM ypoint WHERE userid=#{userid}) WHERE userid=#{userid}
+			]]>
+	</update>
+	
+ 	<update id="editProfileImage">
+		<![CDATA[
+			UPDATE yuser
+			SET appendix=#{appendix}
+				WHERE userid=#{userid}
+			]]>
+	</update>
+ 	
+	<update id="updateYuser">
+		<![CDATA[
+			UPDATE yuser
+			SET userpw=#{userpw}
+				, username=#{username}
+				, userphone=#{userphone}
+				, useraddr=#{useraddr}
+				WHERE userid=#{userid}
+			]]>
+	</update>
+	<update id="updateYuserRoom">
+		<![CDATA[
+			UPDATE yuser
+			SET roomno=#{roomno}
+				WHERE userid=#{userid}
+			]]>
+	</update>
+	
+	<update id="updateYuserPw">
+		<![CDATA[
+			UPDATE yuser
+			SET userpw=#{userpw} 
+			WHERE userid=#{userid} AND userphone=#{userphone}
+			]]>
+	</update>
+	
+	<delete id="deleteYuser">
+		<![CDATA[
+			DELETE FROM yuser 
+			]]>
+	</delete>
+	
+	<select id="checkUserLogin" resultMap="yuser">
+		<![CDATA[
+			SELECT
+				userno
+				, userid
+				, userpw
+				, username
+				, userphone
+				, useraddr
+				, appendix
+				, admin
+				, usergrade
+				, userpoint
+				, departno
+				, roomno
+			FROM yuser WHERE userid=#{userid} and userpw=#{userpw}
+			]]>
+	</select>
+	
+	<select id="selectYuser" resultMap="yuser">
+		<![CDATA[
+			SELECT
+				userno
+				, userid
+				, userpw
+				, username
+				, userphone
+				, useraddr
+				, appendix
+				, admin
+				, usergrade
+				, userpoint
+				, departno
+				, roomno
+			FROM yuser
+			WHERE userid = #{userid}
+			]]>
+	</select>
+	
+	<select id="selectYuserList" parameterType="egovframework.yuser.service.YuserVO" resultType="egovMap">
+			SELECT
+								userno
+								, userid
+								, userpw
+								, username
+								, userphone
+								, useraddr
+								, appendix
+								, admin
+								, usergrade
+								, userpoint
+								, departno
+								, roomno
+					FROM yuser
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					userno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					userid LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY userno desc
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectYuserListTotCnt" parameterType="egovframework.yuser.service.YuserVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM yuser
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					userno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					userid LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+	<select id="findYuserPw" parameterType="egovframework.yuser.service.YuserVO" resultType="int">
+	    SELECT COUNT(*) totcnt 
+	    FROM yuser 
+	    WHERE username=#{username} AND userid=#{userid} AND userphone=#{userphone}
+	</select>
+	
+</mapper>

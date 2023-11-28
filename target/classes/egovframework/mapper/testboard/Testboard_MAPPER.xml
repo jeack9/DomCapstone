@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.testboard.service.impl.TestboardMapper">
+	
+
+	<resultMap id="testboard" type="egovframework.testboard.service.TestboardVO">
+		<result property="bno" column="bno" />
+		<result property="subject" column="subject" />
+		<result property="content" column="content" />
+		<result property="writer" column="writer" />
+		<result property="regdate" column="regdate" />
+		<result property="likes" column="likes" />
+	</resultMap>
+	
+	<insert id="insertTestboard">
+		<![CDATA[
+			INSERT INTO testboard 
+				( subject
+				  , content
+				  , writer
+				  , regdate )
+			VALUES ( #{subject}
+				  , #{content}
+				  , #{writer}
+				  , SYSDATE() )
+		]]>
+	</insert>
+	
+	<update id="updateTestboard">
+		<![CDATA[
+			UPDATE testboard
+			SET subject=#{subject}
+				, content=#{content}
+				, writer=#{writer}
+				, regdate=SYSDATE()
+				WHERE bno=#{bno}
+			]]>
+	</update>
+	
+	<update id="updateBoardLikes">
+		<![CDATA[
+			UPDATE testboard
+			SET likes = likes+1
+				WHERE bno=#{bno}
+			]]>
+	</update>
+	
+	<delete id="deleteTestboard">
+		<![CDATA[
+			DELETE FROM testboard WHERE bno=#{bno}
+			]]>
+	</delete>
+	
+	<select id="selectTestboard" resultMap="testboard">
+		<![CDATA[
+			SELECT
+				bno
+				, subject
+				, content
+				, writer
+				, regdate
+				, likes
+			FROM testboard WHERE bno=#{bno}
+			]]>
+	</select>
+	
+	<select id="selectTestboardList" parameterType="egovframework.testboard.service.TestboardVO" resultType="egovMap">
+			SELECT
+								bno
+								, subject
+								, content
+								, writer
+								, regdate
+								, likes
+					FROM testboard
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					bno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY bno desc
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectTestboardListTotCnt" parameterType="egovframework.testboard.service.TestboardVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM testboard
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					bno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+	<select id="selectBoardTopList" parameterType="egovframework.testboard.service.TestboardVO" resultType="egovMap">
+			SELECT bno, SUBJECT, content, writer, regdate, likes FROM testboard ORDER BY likes desc limit 5;			
+	</select>
+	
+</mapper>

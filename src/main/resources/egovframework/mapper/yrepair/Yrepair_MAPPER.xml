@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.yrepair.service.impl.YrepairMapper">
+	
+
+	<resultMap id="yrepair" type="egovframework.yrepair.service.YrepairVO">
+		<result property="reno" column="reno" />
+		<result property="roomnum" column="roomnum" />
+		<result property="subject" column="subject" />
+		<result property="writer" column="writer" />
+		<result property="userid" column="userid" />
+		<result property="content" column="content" />
+		<result property="regdate" column="regdate" />
+		<result property="state" column="state" />
+	</resultMap>
+	
+	<insert id="insertYrepair">
+		<![CDATA[
+			INSERT INTO yrepair 
+				( reno
+				  , roomnum
+				  , subject
+				  , writer
+				  , userid
+				  , content
+				  , regdate
+				  , state )
+			VALUES ( #{reno}
+				  , #{roomnum}
+				  , #{subject}
+				  , #{writer}
+				  , #{userid}
+				  , #{content}
+				  , NOW()
+				  , 0 )
+		]]>
+	</insert>
+	
+	<update id="updateState">
+		<![CDATA[
+			UPDATE yrepair
+			SET state=1
+				WHERE reno=#{reno}
+			]]>
+	</update>
+	
+	<update id="updateYrepair">
+		<![CDATA[
+			UPDATE yrepair
+			SET roomnum=#{roomnum}
+				, subject=#{subject}
+				, writer=#{writer}
+				, userid=#{userid}
+				, content=#{content}
+				, regdate=NOW()
+				, state=0
+				WHERE reno=#{reno}
+			]]>
+	</update>
+	
+	<delete id="deleteYrepair">
+		<![CDATA[
+			DELETE FROM yrepair WHERE reno=#{reno}
+			]]>
+	</delete>
+	
+	<select id="selectYrepair" resultMap="yrepair">
+		<![CDATA[
+			SELECT
+				reno
+				, roomnum
+				, subject
+				, writer
+				, userid
+				, content
+				, regdate
+				, state
+			FROM yrepair WHERE reno=#{reno}
+			]]>
+	</select>
+	
+	<select id="selectYrepairList" parameterType="egovframework.yrepair.service.YrepairVO" resultType="egovMap">
+			SELECT
+								reno
+								, roomnum
+								, subject
+								, writer
+								, userid
+								, content
+								, regdate
+								, state
+					FROM yrepair
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					reno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					roomnum LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY reno DESC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectYrepairListTotCnt" parameterType="egovframework.yrepair.service.YrepairVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM yrepair
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					reno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					roomnum LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.yrepairask.service.impl.YrepairaskMapper">
+	
+
+	<resultMap id="yrepairask" type="egovframework.yrepairask.service.YrepairaskVO">
+		<result property="id" column="id" />
+		<result property="reno" column="reno" />
+		<result property="content" column="content" />
+	</resultMap>
+	
+	<insert id="insertYrepairask">
+		<![CDATA[
+			INSERT INTO yrepairask 
+				( id
+				  , reno
+				  , content )
+			VALUES ( #{id}
+				  , #{reno}
+				  , #{content} )
+		]]>
+	</insert>
+	
+	<update id="updateYrepairask">
+		<![CDATA[
+			UPDATE yrepairask
+			SET id=#{id}
+				, reno=#{reno}
+				, content=#{content}
+			]]>
+	</update>
+	
+	<delete id="deleteYrepairask">
+		<![CDATA[
+			DELETE FROM yrepairask WHERE reno=#{reno}
+			]]>
+	</delete>
+	
+	<select id="selectYrepairask" resultMap="yrepairask">
+		<![CDATA[
+			SELECT
+				id
+				, reno
+				, content
+			FROM yrepairask WHERE reno=#{reno}
+			]]>
+	</select>
+	
+	<select id="selectYrepairaskList" parameterType="egovframework.yrepairask.service.YrepairaskVO" resultType="egovMap">
+			SELECT
+								id
+								, reno
+								, content
+					FROM yrepairask
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					id = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					reno LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY 
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectYrepairaskListTotCnt" parameterType="egovframework.yrepairask.service.YrepairaskVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM yrepairask
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					id = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					reno LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

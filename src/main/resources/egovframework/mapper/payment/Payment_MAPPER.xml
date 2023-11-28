@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.payment.service.impl.PaymentMapper">
+	
+
+	<resultMap id="payment" type="egovframework.payment.service.PaymentVO">
+		<result property="pno" column="pno" />
+		<result property="username" column="username" />
+		<result property="roomtype" column="roomtype" />
+		<result property="pdate" column="pdate" />
+	</resultMap>
+	
+	<insert id="insertPayment">
+		<![CDATA[
+			INSERT INTO payment 
+				( username
+				  , roomtype
+				  , pdate )
+			VALUES ( #{username}
+				  , #{roomtype}
+				  , SYSDATE())
+		]]>
+	</insert>
+	
+	<update id="updatePayment">
+		<![CDATA[
+			UPDATE payment
+			SET username=#{username}
+				, roomtype=#{roomtype}
+				, pdate=#{pdate}
+				WHERE pno=#{pno}
+			]]>
+	</update>
+	
+	<delete id="deletePayment">
+		<![CDATA[
+			DELETE FROM payment WHERE pno=#{pno}
+			]]>
+	</delete>
+	
+	<select id="selectPayment" resultMap="payment">
+		<![CDATA[
+			SELECT
+				pno
+				, username
+				, roomtype
+				, pdate
+			FROM payment
+			WHERE pno=#{pno}
+			]]>
+	</select>
+	
+	<select id="selectPaymentList" parameterType="egovframework.payment.service.PaymentVO" resultType="egovMap">
+			SELECT
+								pno
+								, username
+								, roomtype
+								, pdate
+					FROM payment
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					pno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					username LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY pno desc
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectPaymentListTotCnt" parameterType="egovframework.payment.service.PaymentVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM payment
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					pno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					username LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

@@ -1,0 +1,33 @@
+.write-main {
+  margin-top: 50px;
+}
+
+.write-main > div {
+  display: flex;
+  flex-direction: row;
+  border-top: 0.5px solid #ccc;
+  padding: 7px;
+}
+
+.write-main > div > span {
+  width: 120px;
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+.list-div {
+  margin: 0 auto;
+  margin-top: 50px;
+  text-align: center;
+}
+
+.list-div a {
+  display: inline-block;
+  padding: 10px 20px;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid;
+  border-color: #ccc;
+  font-size: 13px;
+  font-weight: 600;
+  background: -webkit-linear-gradient(top, #fff 0, #ececec 100%);
+}

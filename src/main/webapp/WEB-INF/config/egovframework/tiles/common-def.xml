@@ -1,0 +1,25 @@
+<!DOCTYPE tiles-definitions PUBLIC
+  "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+ 
+    <!-- 기본 -->
+    <definition name="site_base" template="/WEB-INF/jsp/_tiles/site/layout.jsp">
+        <put-attribute name="top" value="/WEB-INF/jsp/_tiles/site/top.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/_tiles/site/gnb.jsp" />
+        <put-attribute name="lnb" value="/WEB-INF/jsp/_tiles/site/lnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/_tiles/site/footer.jsp" />
+    </definition>
+    
+    <!--  예시 경로 site/aaa/bbb -->
+    <definition name="site/*/*" extends="site_base">
+        <put-attribute name="content" value="/WEB-INF/jsp/egovframework/com/site/{1}/{2}.jsp" />
+    </definition>
+    
+    <!--  예시 경로 site/* -->
+    <definition name="site/*" extends="site_base">
+        <put-attribute name="content" value="/WEB-INF/jsp/egovframework/com/site/{1}.jsp" />
+    </definition>
+ 
+</tiles-definitions>

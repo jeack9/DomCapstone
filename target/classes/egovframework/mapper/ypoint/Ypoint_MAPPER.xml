@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.ypoint.service.impl.YpointMapper">
+	
+
+	<resultMap id="ypoint" type="egovframework.ypoint.service.YpointVO">
+		<result property="pointno" column="pointno" />
+		<result property="userid" column="userid" />
+		<result property="manager" column="manager" />
+		<result property="pointreason" column="pointreason" />
+		<result property="pointchange" column="pointchange" />
+		<result property="pointdate" column="pointdate" />
+	</resultMap>
+	
+	<insert id="insertYpoint">
+		<![CDATA[
+			INSERT INTO ypoint 
+				( pointno
+				  , userid
+				  , manager
+				  , pointreason
+				  , pointchange
+				  , pointdate )
+			VALUES ( #{pointno}
+				  , #{userid}
+				  , #{manager}
+				  , #{pointreason}
+				  , #{pointchange}
+				  , CURDATE())
+		]]>
+	</insert>
+	
+	<update id="updateYpoint">
+		<![CDATA[
+			UPDATE ypoint
+			SET pointno=#{pointno}
+				, userid=#{userid}
+				, manager=#{manager}
+				, pointreason=#{pointreason}
+				, pointchange=#{pointchange}
+				, pointdate=#{pointdate}
+			]]>
+	</update>
+	
+	<delete id="deleteYpoint">
+		<![CDATA[
+			DELETE FROM ypoint 
+			]]>
+	</delete>
+	
+	<select id="selectYpoint" resultMap="ypoint">
+		<![CDATA[
+			SELECT
+				pointno
+				, userid
+				, manager
+				, pointreason
+				, pointchange
+				, pointdate
+			FROM ypoint WHERE userid=#{userid}
+			ORDER BY pointno ASC
+			]]>
+	</select>
+	
+	
+	<select id="selectPointSum" resultType="int">
+		<![CDATA[
+			SELECT
+				sum(pointchange)
+			FROM ypoint WHERE userid=#{userid}
+			]]>
+	</select>
+	
+	
+	<select id="selectYpointList" parameterType="egovframework.ypoint.service.YpointVO" resultType="egovMap">
+			SELECT
+								pointno
+								, userid
+								, manager
+								, pointreason
+								, pointchange
+								, pointdate
+					FROM ypoint
+			WHERE userid=#{userid}
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					pointno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					userid LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY pointno ASC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectYpointListTotCnt" parameterType="egovframework.ypoint.service.YpointVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM ypoint
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					pointno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					userid LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

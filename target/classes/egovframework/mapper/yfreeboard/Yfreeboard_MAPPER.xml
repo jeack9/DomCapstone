@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.yfreeboard.service.impl.YfreeboardMapper">
+	
+
+	<resultMap id="yfreeboard" type="egovframework.yfreeboard.service.YfreeboardVO">
+		<result property="bno" column="bno" />
+		<result property="subject" column="subject" />
+		<result property="content" column="content" />
+		<result property="writer" column="writer" />
+		<result property="regdate" column="regdate" />
+		<result property="moddate" column="moddate" />
+		<result property="onlytext" column="onlytext" />
+		<result property="likes" column="likes" />
+		<result property="visitors" column="visitors" />
+	</resultMap>
+	
+	<resultMap id="yuser" type="egovframework.yuser.service.YuserVO">
+		<result property="userno" column="userno" />
+		<result property="userid" column="userid" />
+		<result property="userpw" column="userpw" />
+		<result property="username" column="username" />
+		<result property="userphone" column="userphone" />
+		<result property="useraddr" column="useraddr" />
+		<result property="appendix" column="appendix" />
+		<result property="admin" column="admin" />
+		<result property="usergrade" column="usergrade" />
+		<result property="userpoint" column="userpoint" />
+		<result property="departno" column="departno" />
+		<result property="roomno" column="roomno" />
+	</resultMap>
+	
+	<insert id="insertYfreeboard">
+		<![CDATA[
+			INSERT INTO yfreeboard 
+				( bno
+				  , subject
+				  , content
+				  , writer
+				  , regdate
+				  , onlytext
+				  , likes
+				  , visitors
+				  , userid )
+			VALUES ( bno
+				  , #{subject}
+				  , #{content}
+				  , #{writer}
+				  , NOW()
+				  , #{onlytext}
+				  , 0
+				  , 0
+				  , #{userid} )
+		]]>
+	</insert>
+	
+	<update id="updateYfreeboard">
+		<![CDATA[
+			UPDATE yfreeboard
+			SET
+				 subject=#{subject}
+				, content=#{content}
+				, moddate=NOW()
+				, onlytext=#{onlytext}
+				where bno=#{bno}
+			]]>
+	</update>
+	
+	<update id="updateVisitors">
+		<![CDATA[
+			UPDATE yfreeboard
+			SET visitors=visitors+1
+				where bno=#{bno}
+			]]>
+	</update>
+	
+	<update id="increaseYLikes">
+		<![CDATA[
+			UPDATE yfreeboard
+			SET likes = likes+1
+				WHERE bno=#{bno}
+			]]>
+	</update>
+	
+	<update id="decreaseYLikes">
+		<![CDATA[
+			UPDATE yfreeboard
+			SET likes = likes-1
+				WHERE bno=#{bno}
+			]]>
+	</update>
+	
+
+	<delete id="deleteYfreeboard">
+		<![CDATA[
+			DELETE FROM yfreeboard where bno=#{bno}
+			]]>
+	</delete>
+	
+	<select id="selectYfreeboard" resultMap="yfreeboard">
+		<![CDATA[
+			SELECT
+				bno
+				, subject
+				, content
+				, writer
+				, regdate
+				, moddate
+				, onlytext
+				, likes
+				, visitors
+				, userid
+			FROM yfreeboard
+			where
+			bno=#{bno}
+			]]>
+	</select>
+	
+	<select id="selectYfreeboardList" parameterType="egovframework.yfreeboard.service.YfreeboardVO" resultType="egovMap">
+			SELECT fb.*, c.comment_count
+			FROM yfreeboard fb
+			LEFT JOIN (
+			    SELECT b.bno, b.subject, COUNT(c.cno) AS comment_count
+			    FROM yfreeboard b
+			    LEFT JOIN ycomment c ON b.bno = c.bno
+			    GROUP BY b.bno, b.subject
+			) c ON fb.bno = c.bno
+			ORDER BY fb.bno DESC;
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					bno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+	</select>	
+	
+	
+	
+	<select id="selectMostLike" parameterType="egovframework.yfreeboard.service.YfreeboardVO" resultType="egovMap">
+			SELECT c.*, p.appendix
+			FROM yuser p
+			JOIN yfreeboard c
+			ON p.userid = c.userid
+			ORDER BY likes DESC
+			LIMIT 5 OFFSET 0
+	</select>	
+	
+	
+	<select id="selectYfreeboardListTotCnt" parameterType="egovframework.yfreeboard.service.YfreeboardVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM yfreeboard
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					bno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

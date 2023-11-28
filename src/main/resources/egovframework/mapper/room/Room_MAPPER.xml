@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.room.service.impl.RoomMapper">
+	
+
+	<resultMap id="room" type="egovframework.room.service.RoomVO">
+		<result property="num" column="num" />
+		<result property="state" column="state" />
+		<result property="row" column="row" />
+		<result property="col" column="col" />
+		<result property="people" column="people" />
+		<result property="roomno" column="roomno"/>
+		<result property="userone" column="userone"/>
+		<result property="usertwo" column="usertwo"/>
+		<result property="floor" column="floor"/>
+	</resultMap>
+	
+	<insert id="insertRoom">
+		<![CDATA[
+			INSERT INTO room 
+				
+				
+			VALUES ( #{num}
+				  , #{state}
+				  , #{row}
+				  , #{col}
+				  , #{people}
+				  , #{name} )
+		]]>
+	</insert>
+	<update id="updateRoom">
+		<![CDATA[
+			UPDATE room 
+			SET	state=#{state},
+			userone=#{userone},
+			usertwo=#{usertwo},
+			people=#{people}
+			where roomno=#{roomno}
+			]]>
+	</update>
+	<update id="updateJoinRoom">
+		<![CDATA[
+			UPDATE room A JOIN yuser B
+			ON A.user = B.username
+			SET	B.roomno = #{name}
+			where A.name=#{name}
+			]]>
+	</update>
+	
+	<delete id="deleteRoom">
+		<![CDATA[
+			DELETE FROM room 
+			]]>
+	</delete>
+	
+	<select id="selectRoom" resultMap="room">
+		<![CDATA[
+			SELECT
+				num
+				, userone
+				, usertwo
+				, state
+				, 'row'
+				, 'col'
+				, people
+				, roomno
+				, 'floor'
+			FROM room where roomno=#{roomno};
+			]]>
+	</select>
+	<select id="selectFloorList" parameterType="egovframework.room.service.RoomVO" resultType="egovMap">
+			SELECT
+								*
+					FROM room
+			WHERE floor=#{floor}
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					num = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					state LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY num	
+	</select>
+	<select id="selectRoomList" parameterType="egovframework.room.service.RoomVO" resultType="egovMap">
+			SELECT
+								num
+								, state
+								, 'row'
+								, 'col'
+								, people
+								, name
+								, 'floor'
+					FROM room
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					num = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					state LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY num	
+	</select>	
+	<select id="selectRoomListTotCnt" parameterType="egovframework.room.service.RoomVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM room
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					num = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					state LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

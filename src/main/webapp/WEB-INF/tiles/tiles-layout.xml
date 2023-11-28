@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+ 
+    <!-- 기본 -->
+      <definition name="layout" template="/WEB-INF/views/layout/layout.jsp">
+		<put-attribute name="Header" value="/WEB-INF/views/layout/header.jsp"/>
+		<!-- <put-attribute name="content" value="/WEB-INF/views/main/main.jsp"/> -->
+		<put-attribute name="content" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+	</definition>
+	
+    <definition name="gc/*" template="/WEB-INF/views/layout/layout.jsp"> 
+      <put-attribute name="Header" value="/WEB-INF/views/layout/header.jsp"/> 
+      <put-attribute name="content" value="/WEB-INF/views/{1}.jsp" />
+	  <put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+    </definition>  
+    
+    <!-- 
+    <definition name="comp/*/*" template="/WEB-INF/views/layout/companylayout.jsp"> 
+      <put-attribute name="Header" value="/WEB-INF/views/layout/companyHeader.jsp"/> 
+      <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
+	  <put-attribute name="footer" value="/WEB-INF/views/layout/companyfooter.jsp"/>
+    </definition>
+    
+    <definition name="cust/*/*" extends="layout"> 
+      <put-attribute name="Header" value="/WEB-INF/views/layout/customerHeader.jsp"/> 
+      <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="admi/*/*" extends="layout"> 
+      <put-attribute name="Header" value="/WEB-INF/views/layout/adminHeader.jsp"/> 
+      <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition> -->
+    
+     
+	<definition name="*/*" extends="layout">
+	    <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+	 
+	 
+	<definition name="/*/*" extends="layout">      
+      <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+ 
+</tiles-definitions>

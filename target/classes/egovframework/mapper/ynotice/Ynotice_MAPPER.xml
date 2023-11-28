@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.ynotice.service.impl.YnoticeMapper">
+	
+
+	<resultMap id="ynotice" type="egovframework.ynotice.service.YnoticeVO">
+		<result property="id" column="id" />
+		<result property="subject" column="subject" />
+		<result property="content" column="content" />
+		<result property="writer" column="writer" />
+		<result property="regdate" column="regdate" />
+		<result property="moddate" column="moddate" />
+		<result property="onlytext" column="onlytext" />
+		<result property="visitors" column="visitors" />
+	</resultMap>
+	
+	<insert id="insertYnotice">
+		<![CDATA[
+			INSERT INTO ynotice 
+				( id
+				  , subject
+				  , content
+				  , writer
+				  , regdate
+				  , onlytext
+				  , visitors )
+			VALUES ( id
+				  , #{subject}
+				  , #{content}
+				  , '관리자'
+				  , NOW()
+				  , #{onlytext}
+				  , 0)
+		]]>
+	</insert>
+	
+	<update id="updateYnotice">
+		<![CDATA[
+			UPDATE ynotice
+			SET subject=#{subject}
+				, content=#{content}
+				, moddate=NOW()
+				, onlytext=#{onlytext}
+				where id = #{id}
+			]]>
+	</update>
+	
+	
+	<update id="updateVisitor">
+		<![CDATA[
+			UPDATE ynotice
+			SET visitors = visitors + 1
+			where id = #{id}
+			]]>
+	</update>
+	
+	<delete id="deleteYnotice">
+		<![CDATA[
+			DELETE FROM ynotice where id = #{id}
+			]]>
+	</delete>
+	
+	<select id="selectYnotice" resultMap="ynotice">
+		<![CDATA[
+			SELECT
+				id
+				, subject
+				, content
+				, writer
+				, regdate
+				, moddate
+				, onlytext
+				, visitors
+			FROM ynotice
+			where id = #{id}
+			]]>
+	</select>
+	
+	<select id="selectYnoticeList" parameterType="egovframework.ynotice.service.YnoticeVO" resultType="egovMap">
+			SELECT
+								id
+								, subject
+								, content
+								, writer
+								, regdate
+								, moddate
+								, onlytext
+								, visitors
+					FROM ynotice
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					id = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY id desc
+	</select>	
+	<select id="selectYnoticeListTotCnt" parameterType="egovframework.ynotice.service.YnoticeVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM ynotice
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					id = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					subject LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

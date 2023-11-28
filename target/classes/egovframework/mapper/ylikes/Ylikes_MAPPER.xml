@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.ylikes.service.impl.YlikesMapper">
+	
+
+	<resultMap id="ylikes" type="egovframework.ylikes.service.YlikesVO">
+		<result property="lno" column="lno" />
+		<result property="bno" column="bno" />
+		<result property="userid" column="userid" />
+	</resultMap>
+	
+	<insert id="insertYlikes">
+		<![CDATA[
+			INSERT INTO ylikes 
+				( bno
+				  , userid )
+			VALUES ( #{bno}
+				  , #{userid} )
+		]]>
+	</insert>
+	
+	<update id="updateYlikes">
+		<![CDATA[
+			UPDATE ylikes
+			SET lno=#{lno}
+				, bno=#{bno}
+				, userid=#{userid}
+			]]>
+	</update>
+	
+	<delete id="deleteYlikes">
+		<![CDATA[
+			DELETE FROM ylikes WHERE userid=#{userid} AND bno=#{bno}
+			]]>
+	</delete>
+	
+	<select id="selectYlikes" resultMap="ylikes">
+		<![CDATA[
+			SELECT
+				lno
+				, bno
+				, userid
+			FROM ylikes
+			WHERE userid=#{userid} AND bno=#{bno}
+			]]>
+	</select>
+	
+	<select id="selectYlikesList" parameterType="egovframework.ylikes.service.YlikesVO" resultType="egovMap">
+			SELECT
+								lno
+								, bno
+								, userid
+					FROM ylikes
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					lno = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					bno LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY 
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectYlikesListTotCnt" parameterType="egovframework.ylikes.service.YlikesVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM ylikes
+			WHERE userid=#{userid} AND bno=#{bno}
+	</select>
+
+</mapper>

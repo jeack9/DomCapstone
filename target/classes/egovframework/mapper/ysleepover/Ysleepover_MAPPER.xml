@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.ysleepover.service.impl.YsleepoverMapper">
+	<resultMap id="ysleepover" type="egovframework.ysleepover.service.YsleepoverVO">
+		<result property="id" column="id" />
+		<result property="place" column="place" />
+		<result property="startdate" column="startdate" />
+		<result property="enddate" column="enddate" />
+		<result property="userid" column="userid" />
+		<result property="phone" column="phone" />
+		<result property="applydate" column="applydate" />
+		<result property="reason" column="reason" />
+		<result property="issignoff" column="issignoff" />
+	</resultMap>
+	
+	<insert id="insertYsleepover">
+		<![CDATA[
+			INSERT INTO ysleepover 
+				( id
+				  , place
+				  , startdate
+				  , enddate
+				  , phone
+				  , applydate
+				  , reason
+				  , userid
+				  , issignoff )
+			VALUES ( id
+				  , #{place}
+				  , #{startdate}
+				  , #{enddate}
+				  , #{phone}
+				  , #{applydate}
+				  , #{reason}
+				  , #{userid}
+				  , 0 )
+		]]>
+	</insert>
+	
+	
+	
+	<update id="updateYsleepover">
+		<![CDATA[
+			UPDATE ysleepover
+			SET issignoff = 1
+			where id=#{id}
+				
+			]]>
+	</update>
+	
+	<delete id="deleteYsleepover">
+		<![CDATA[
+			DELETE FROM ysleepover 
+			]]>
+	</delete>
+	
+	<select id="selectYsleepover" resultMap="ysleepover">
+		<![CDATA[
+			SELECT
+				id
+				, place
+				, startdate
+				, enddate
+				, userid
+				, phone
+				, applydate
+				, reason
+			FROM ysleepover
+			]]>
+	</select>
+	
+	<select id="selectYsleepoverListJson" parameterType="egovframework.ysleepover.service.YsleepoverVO" resultType="egovMap">
+SELECT ysleepover.*, yuser.username
+FROM ysleepover
+JOIN yuser ON ysleepover.userid = yuser.userid
+WHERE ysleepover.issignoff = 0
+ORDER BY ysleepover.id DESC;
+
+
+	</select>
+	
+	
+	
+	
+		<select id="todayAbsentStudent" parameterType="egovframework.ysleepover.service.YsleepoverVO" resultType="egovMap">
+SELECT ysleepover.*, yuser.username, yuser.roomno
+FROM ysleepover
+JOIN yuser ON ysleepover.userid = yuser.userid
+WHERE CURDATE() BETWEEN STR_TO_DATE(startdate, '%Y-%m-%d') AND STR_TO_DATE(enddate, '%Y-%m-%d')AND ysleepover.issignoff = 1
+ORDER BY ysleepover.id DESC;
+	</select>
+	
+	<select id="selectYsleepoverList" parameterType="egovframework.ysleepover.service.YsleepoverVO" resultType="egovMap">
+			SELECT
+								id
+								, place
+								, startdate
+								, enddate
+								, userid
+								, phone
+								, applydate
+								, reason
+								, issignoff
+					FROM ysleepover
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					userid = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					place LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY id desc
+	</select>	
+	<select id="selectYsleepoverListTotCnt" parameterType="egovframework.ysleepover.service.YsleepoverVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM ysleepover
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					id = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					place LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>
